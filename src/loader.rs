@@ -3,6 +3,7 @@ use std::error::Error;
 use std::fs;
 extern crate json;
 use crate::launcher;
+use log::{info, warn, error};
 
 // Fields used in the Push2Run export file.
 static DESCRIPTION: &str = "Descrption";
@@ -22,14 +23,14 @@ pub fn load_data<P: AsRef<Path>>(path: P) -> Result<launcher::LaunchData, Box<dy
         let triggers: Vec<String> = listen_for.split("\r\n").map(|x| x.to_string()).collect();
         launchdata.add(
             launcher::Launcher {
-                description: entry[DESCRIPTION].as_str().unwrap().to_string(),
-                command: entry[COMMAND].as_str().unwrap().to_string(),
-                parameters: entry[PARAMETERS].as_str().unwrap().to_string(),
-                working_dir: PathBuf::from(entry[START_IN].as_str().unwrap()),
+                description: entry[DESCRIPTION].as_str().unwrap().into(),
+                command: entry[COMMAND].as_str().unwrap().into(),
+                parameters: entry[PARAMETERS].as_str().unwrap().into(),
+                working_dir: entry[START_IN].as_str().unwrap().into(),
             },
             triggers,
         );
-        println!("Added {:?}", entry[DESCRIPTION].as_str().unwrap());
+        info!("Added {:?}", entry[DESCRIPTION].as_str().unwrap());
     }
     Ok(launchdata)
 }

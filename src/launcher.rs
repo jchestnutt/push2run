@@ -1,23 +1,24 @@
 use std::collections::HashMap;
 use std::io;
-use std::path::PathBuf;
-use std::process::{Command, Child};
-
+use std::process::{Child, Command};
+use log::{info,warn,error};
 
 #[derive(Debug)]
 pub struct Launcher {
     pub description: String,
     pub command: String,
     pub parameters: String,
-    pub working_dir: PathBuf,
+    pub working_dir: String,
 }
-
-impl Launcher{
+impl Launcher {
     pub fn launch(&self) -> io::Result<Child> {
-        Command::new(&self.command)
-            .args(self.parameters.split_ascii_whitespace())
-            .current_dir(&self.working_dir)
-            .spawn()
+        let mut cmd = Command::new(&self.command);
+        cmd.args(self.parameters.split_ascii_whitespace());
+        if !self.working_dir.is_empty() {
+            cmd.current_dir(&self.working_dir);
+        }
+        let result = cmd.spawn();
+        result
     }
 }
 
@@ -44,13 +45,13 @@ impl LaunchData {
         match self.mapping.get(s) {
             Some(index) => {
                 let launcher = &self.programs[*index];
-                println!("Launching {:?}", launcher);
-                if let Err(err) = launcher.launch(){
-                    println!("Error launching {}: {:?}", &launcher.command, err);
+                info!("Launching {:?}", launcher);
+                if let Err(err) = launcher.launch() {
+                    error!("Error launching {}: {:?}", &launcher.command, err);
                 }
             }
             None => {
-                println!("Request \"{}\" unrecognized.", s);
+                warn!("Request \"{}\" unrecognized.", s);
             }
         }
     }

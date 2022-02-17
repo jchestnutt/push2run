@@ -1,6 +1,7 @@
 use rumqttc::{Client, Connection, Event, Incoming, MqttOptions, QoS};
 use std::str;
 use std::time::Duration;
+use log::{info, warn, error};
 
 use crate::launcher;
 
@@ -28,12 +29,12 @@ pub fn monitor(mut client: Client, mut connection: Connection, launch_data: &lau
             Ok(Event::Incoming(Incoming::Publish(p))) => {
                 let result = str::from_utf8(p.payload.as_ref());
                 if let Ok(s) = result {
-                    println!("Topic: {}, Payload: {:?}", p.topic, s);
+                    info!("Topic: {}, Payload: {:?}", p.topic, s);
                     launch_data.trigger(s);
                 };
             }
             _ => {
-                println!("Notification = {:?}", notification);
+                info!("Notification = {:?}", notification);
             }
         }
     }

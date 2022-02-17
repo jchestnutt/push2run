@@ -9,3 +9,6 @@ edition = "2021"
 rumqttc = "*"
 json = "*"
 toml = "*"
+log = "*"
+flexi_logger = { version = "*", features = ["colors"] }
+
