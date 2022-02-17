@@ -1,5 +1,5 @@
 use flexi_logger::{AdaptiveFormat, Duplicate, FileSpec, Logger};
-use log::{error, info, warn};
+use log;
 use push2run::loader;
 use push2run::mqtt_monitor::{monitor, setup_mqtt};
 use push2run::read_config;
@@ -31,7 +31,7 @@ fn main() {
     let mqtt_table = mqtt_value["mqtt"].as_table().unwrap();
 
     let mqtt_config = read_config::read_mqtt(mqtt_table);
-    info!("MQTT server {}:{}", mqtt_config.host, mqtt_config.port);
+    log::info!("MQTT server {}:{}", mqtt_config.host, mqtt_config.port);
 
     let (client, connection) = setup_mqtt(mqtt_config);
     monitor(client, connection, &launch_data);

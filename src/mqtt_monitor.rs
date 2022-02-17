@@ -1,7 +1,7 @@
 use rumqttc::{Client, Connection, Event, Incoming, MqttOptions, QoS};
 use std::str;
 use std::time::Duration;
-use log::{info, warn, error};
+use log;
 
 use crate::launcher;
 
@@ -15,7 +15,7 @@ pub struct MqttConfig {
 
 pub fn setup_mqtt(config: MqttConfig) -> (Client, Connection) {
     let mut mqttoptions = MqttOptions::new(config.topic, config.host, config.port as u16);
-    mqttoptions.set_keep_alive(Duration::from_secs(30));
+    mqttoptions.set_keep_alive(Duration::from_secs(60));
     mqttoptions.set_credentials(config.username, config.password);
     //mqttoptions.set_transport(Transport::tls(Vec::from("Test CA"), None, None));
     Client::new(mqttoptions, 10)
@@ -29,12 +29,12 @@ pub fn monitor(mut client: Client, mut connection: Connection, launch_data: &lau
             Ok(Event::Incoming(Incoming::Publish(p))) => {
                 let result = str::from_utf8(p.payload.as_ref());
                 if let Ok(s) = result {
-                    info!("Topic: {}, Payload: {:?}", p.topic, s);
+                    log::info!("Topic: {}, Payload: {:?}", p.topic, s);
                     launch_data.trigger(s);
                 };
             }
             _ => {
-                info!("Notification = {:?}", notification);
+                log::info!("Notification = {:?}", notification);
             }
         }
     }

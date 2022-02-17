@@ -1,9 +1,9 @@
-use std::path::{Path, PathBuf};
+use std::path::{Path};
 use std::error::Error;
 use std::fs;
 extern crate json;
 use crate::launcher;
-use log::{info, warn, error};
+use log;
 
 // Fields used in the Push2Run export file.
 static DESCRIPTION: &str = "Descrption";
@@ -30,7 +30,7 @@ pub fn load_data<P: AsRef<Path>>(path: P) -> Result<launcher::LaunchData, Box<dy
             },
             triggers,
         );
-        info!("Added {:?}", entry[DESCRIPTION].as_str().unwrap());
+        log::info!("Added {:?}", entry[DESCRIPTION].as_str().unwrap());
     }
     Ok(launchdata)
 }
